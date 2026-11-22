@@ -38,9 +38,9 @@
 
 ## 安装
 
-### 方式一：`.piplug` 安装包
+### 方式一：`.piplug` 安装包（推荐）
 
-1. 从 Releases 下载 `local.dafeiyu-pet-<版本>.piplug`
+1. 从 [Releases](https://github.com/jiangchen528/dafeiyu-pet-pidesktop/releases/latest) 下载 `local.dafeiyu-pet-1.0.0.piplug`
 2. PI-Desktop **设置 → 插件 → 安装本地插件**，选择该文件
 3. 重新加载插件（首次会提示权限：`agent.tool.register`、`agent.extension`，同意即可）
 

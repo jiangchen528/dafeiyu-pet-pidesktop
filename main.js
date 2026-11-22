@@ -264,7 +264,7 @@ function downloadAssets() {
     fs.mkdirSync(PET_ROOT, { recursive: true });
     const archive = path.join(os.tmpdir(), `dafeiyu-assets-${Date.now()}.tar.gz`);
     const curl = process.platform === "win32" ? "curl.exe" : "curl";
-    log("info", `开始下载素材（约 580MB，只此一次）：${ASSETS_URL}`);
+    log("info", `开始下载素材（约 580MB，视网络 3-10 分钟，只此一次）：${ASSETS_URL}`);
 
     const dl = spawn(
       curl,
@@ -272,11 +272,24 @@ function downloadAssets() {
       { stdio: ["ignore", "ignore", "pipe"], windowsHide: true },
     );
     let dlErr = "";
+    // curl 在管道下不打印进度条，自己盯着临时文件大小，至少让 plugin.log 能看出在动
+    const progress = setInterval(() => {
+      try {
+        const mb = fs.statSync(archive).size / 1048576;
+        log("info", `素材下载中：${mb.toFixed(1)} MB / 580 MB`);
+      } catch {
+        /* 文件还没落地 */
+      }
+    }, 5000);
     dl.stderr.on("data", (chunk) => {
       dlErr += chunk.toString();
     });
-    dl.once("error", (error) => reject(new Error(`调用 curl 失败：${error.message}`)));
+    dl.once("error", (error) => {
+      clearInterval(progress);
+      reject(new Error(`调用 curl 失败：${error.message}`));
+    });
     dl.once("exit", (code) => {
+      clearInterval(progress);
       if (code !== 0) {
         try {
           fs.unlinkSync(archive);

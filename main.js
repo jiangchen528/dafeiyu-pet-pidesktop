@@ -381,6 +381,7 @@ function startHelper() {
 
   const tmp = path.join(stateDir(), "tmp");
   fs.mkdirSync(tmp, { recursive: true });
+  cleanStaleRuntimeDirs(tmp);
 
   const env = {
     ...process.env,
@@ -803,6 +804,35 @@ async function onUnload() {
     starting = false;
   }
   log("info", "插件已卸载");
+}
+
+/**
+ * PyInstaller onefile 会把运行时解包到 TEMP 下的 _MEIxxxx，正常退出会自己删，
+ * 被强杀则留下约 113MB。我们把 helper 的 TEMP 固定成 stateDir()/tmp，
+ * 所以每次异常退出都会在那儿攒一份，久了能吃掉几个 G。
+ * 启动前扫一遍：只删 5 分钟以前的，避免动到正在运行的那一份。
+ */
+function cleanStaleRuntimeDirs(tmp) {
+  const cutoff = Date.now() - 5 * 60 * 1000;
+  let removed = 0;
+  let entries;
+  try {
+    entries = fs.readdirSync(tmp, { withFileTypes: true });
+  } catch {
+    return;
+  }
+  for (const entry of entries) {
+    if (!entry.isDirectory() || !entry.name.startsWith("_MEI")) continue;
+    const full = path.join(tmp, entry.name);
+    try {
+      if (fs.statSync(full).mtimeMs > cutoff) continue;
+      fs.rmSync(full, { recursive: true, force: true });
+      removed += 1;
+    } catch {
+      /* 正在被占用，跳过 */
+    }
+  }
+  if (removed > 0) log("info", `清理了 ${removed} 个 PyInstaller 残留解包目录`);
 }
 
 module.exports = { onLoad, onUnload };

@@ -1,0 +1,50 @@
+{
+  "schemaVersion": 1,
+  "id": "local.dafeiyu-pet",
+  "name": "大肥鱼桌宠",
+  "version": "1.0.0",
+  "description": "桌面上的蓝色鲸鱼娘：104 个动作、语音、状态气泡；由 AI 按语义触发动作。移植自 dsh-dafeiyu-pet。",
+  "main": "main.js",
+  "contributes": {
+    "agentTools": [
+      {
+        "name": "dafeiyu_play_action",
+        "description": "让桌面上的大肥鱼做一个动作。回完话之后调用一次，让她的动作和内容对上。挑语义最接近的那个；实在没有合适的就用 tail 或 ext_happy。",
+        "risk": "low",
+        "schema": {
+          "type": "object",
+          "properties": {
+            "clip": {
+              "type": "string",
+              "description": "动作 id（情绪 ext_angry/ext_shy/ext_happy，互动 poke/head_pat/tail，工作 ext_coding/ext_work_tap，吃喝 ext_rice/ext_snack 等 104 个）"
+            }
+          },
+          "required": ["clip"],
+          "additionalProperties": false
+        }
+      },
+      {
+        "name": "dafeiyu_speak",
+        "description": "用大肥鱼的声音在电脑上念一句话（edge-tts，本机播放，不需要 key）。",
+        "risk": "low",
+        "schema": {
+          "type": "object",
+          "properties": {
+            "text": {
+              "type": "string",
+              "description": "要念出来的话，一到两句，不要带括号旁白"
+            }
+          },
+          "required": ["text"],
+          "additionalProperties": false
+        }
+      }
+    ],
+    "agentExtensions": ["agent-extension.mjs"]
+  },
+  "permissions": ["agent.tool.register", "agent.extension"],
+  "engines": {
+    "piDesktop": ">=0.17.0"
+  },
+  "activationEvents": ["onStartup"]
+}

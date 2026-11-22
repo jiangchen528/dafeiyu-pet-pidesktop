@@ -1,0 +1,16 @@
+# 构建产物
+dist/
+
+# 依赖（本插件零 npm 依赖，留作以防）
+node_modules/
+
+# 本地配置与日志
+*.log
+*.bak
+*.bak-*
+config.json
+state.jsonl
+
+# 素材（由插件运行时下载，绝不入库）
+assets/
+runtime/

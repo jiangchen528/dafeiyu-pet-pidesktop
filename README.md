@@ -65,12 +65,16 @@
 
 1. 素材不在 → 自动用系统 `curl` 下载并用 `tar` 解压到
    `%APPDATA%\PI-Desktop\dafeiyu-pet-home\dafeiyu-pet\`
-   （日志会打印「开始下载素材（约 580MB，只此一次）」）
+   （日志会打印「开始下载素材（约 580MB，视网络 3-10 分钟，只此一次）」）
 2. 解压完成后自动启动桌宠，出现在屏幕右下角
 3. 之后每次启动都是秒开
 
-> 下载卡住通常是网络：插件用系统 `curl.exe`，会自动走系统代理。
-> 也可以手动指定镜像：设置环境变量 `DAFEIYU_PET_ASSETS_URL` 指向自建地址。
+> **下载期间没有任何界面提示**，进度只能看 `plugin.log`（每 5 秒一行
+> 「素材下载中：xx MB / 580 MB」）。国内直连 GitHub 实测约 380 KB/s，
+> 也就是 **25～30 分钟**，不是卡死，别急着关。
+>
+> 嫌慢可以换镜像：设置环境变量 `DAFEIYU_PET_ASSETS_URL` 指向自建地址
+> （任何能返回同一个 `dafeiyu-pet-assets-1.0.0.tar.gz` 的地址都行）。
 
 排查日志：`%APPDATA%\PI-Desktop\dafeiyu-pet-home\dafeiyu-pet\plugin.log`
 
